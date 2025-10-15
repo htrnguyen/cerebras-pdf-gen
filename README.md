@@ -1,56 +1,47 @@
-# AI Document Generator (Công cụ Tự động Tạo Tài liệu)
+# AI Document Generator
 
-Một công cụ dòng lệnh (CLI) sử dụng Google Gemini API để tự động tạo ra các bài viết, báo cáo chi tiết về các chủ đề ngẫu nhiên và lưu chúng dưới dạng file `.docx`.
+A command-line tool that uses the Google Gemini API to automatically generate detailed reports on random topics and saves them as `.docx` files.
 
-## Tính năng
+## Features
 
-- **Tạo chủ đề ngẫu nhiên:** Tự động sinh ra các chủ đề đa dạng và thú vị.
-- **Sinh nội dung chuyên sâu:** Sử dụng mô hình `gemini-1.5-flash` để viết các bài phân tích có cấu trúc (tiêu đề, giới thiệu, thân bài, kết luận) với độ dài 800-1200 từ.
-- **Định dạng Markdown:** Nội dung được tạo ban đầu ở định dạng Markdown.
-- **Chuyển đổi sang DOCX:** Tự động sử dụng Pandoc để chuyển đổi file Markdown thành `.docx`.
-- **Xử lý song song:** Có khả năng tạo nhiều tài liệu cùng lúc để tăng hiệu suất.
+- Generates random, interesting topics.
+- Uses the `gemini-1.5-flash` model to write 800-1200 word articles in Markdown.
+- Automatically converts Markdown files to `.docx` using Pandoc.
+- Supports concurrent document creation.
 
-## Yêu cầu
+## Requirements
 
 - Python 3.x
 - [Pandoc](https://pandoc.org/installing.html)
-- Một khóa API của Google Gemini.
+- A Google Gemini API Key.
 
-## Cài đặt & Cấu hình
+## Setup
 
-1. **Clone repository:**
+1. **Clone the repository:**
    ```bash
-   git clone <URL_CUA_REPO_TREN_GITHUB>
+   git clone https://github.com/htrnguyen/ai-document-generator.git
    cd ai-document-generator
    ```
 
-2. **Cài đặt thư viện Python:**
+2. **Install dependencies:**
    ```bash
    pip install -r requirements.txt
    ```
 
-3. **Cấu hình Pandoc:**
-   Dự án này đã bao gồm `pandoc.exe` trong thư mục `pandoc-3.8.2`. Script đã được cấu hình để sử dụng đường dẫn này. Nếu bạn di chuyển thư mục, hãy cập nhật biến `PANDOC_PATH` trong `main.py`.
-
-4. **Cấu hình API Key:**
-   - Tạo một file tên là `.env` ở thư mục gốc.
-   - Thêm nội dung sau vào file `.env` và thay thế `YOUR_API_KEY_HERE` bằng khóa API của bạn:
+3. **Configure API Key:**
+   - Create a `.env` file in the root directory.
+   - Add your API key to the `.env` file:
      ```
      GEMINI_API_KEY="YOUR_API_KEY_HERE"
      ```
 
-## Sử dụng
+## Usage
 
-Chạy script từ dòng lệnh và cung cấp số lượng file bạn muốn tạo:
+Run the script from the command line, providing the number of documents you want to create.
 
-```bash
-python main.py <so_luong_file>
-```
-
-**Ví dụ:** Để tạo 5 tài liệu:
-
+**Example:** To generate 5 documents:
 ```bash
 python main.py 5
 ```
 
-Các file `.docx` sẽ được tạo và lưu trong thư mục `docs`.
+The output `.docx` files will be saved in the `docs/` directory.
