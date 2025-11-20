@@ -8,12 +8,11 @@ from dotenv import load_dotenv
 import re
 import subprocess
 import json
-import shutil
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
 load_dotenv()
 
-PANDOC_PATH = "pandoc"
+PANDOC_PATH = r"pandoc-3.8.2.1\pandoc.exe"
 
 def sanitize_topic_for_filename(topic):
     """Clean the topic string to be a valid filename component."""
@@ -107,9 +106,8 @@ def main():
     """Main function to coordinate document creation."""
     print("Starting document generation process...")
 
-    if not shutil.which(PANDOC_PATH):
-        print(f"ERROR: '{PANDOC_PATH}' is not found in your system's PATH.")
-        print("Please install Pandoc and ensure it is added to your system's environment variables.")
+    if not os.path.exists(PANDOC_PATH):
+        print(f"ERROR: pandoc.exe not found at: {PANDOC_PATH}")
         sys.exit(1)
 
     api_key = os.getenv("GEMINI_API_KEY")
