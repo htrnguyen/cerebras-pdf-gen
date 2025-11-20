@@ -1,20 +1,19 @@
 import os
 import sys
 
-# Suppress gRPC warnings from the Google API library
 os.environ['GRPC_VERBOSITY'] = 'ERROR'
 
 import google.generativeai as genai
 from dotenv import load_dotenv
 import re
 import subprocess
+import json
+import shutil
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
-# Load environment variables from .env file
 load_dotenv()
 
-# --- CONFIGURATION: PATH TO PANDOC ---
-PANDOC_PATH = r"C:\Users\Nguyen\Desktop\studocu_unlock\pandoc-3.8.2\pandoc.exe"
+PANDOC_PATH = "pandoc"
 
 def sanitize_topic_for_filename(topic):
     """Clean the topic string to be a valid filename component."""
@@ -24,46 +23,58 @@ def sanitize_topic_for_filename(topic):
 
 def create_document(model, output_dir, file_index):
     """
-    Creates a single document on a completely random topic.
+    Creates a single document by generating a topic, filename, and content
+    in a single API call.
     """
-    md_filepath = None # Initialize for use in the except block
+    md_filepath = None
     try:
-        # 1. Generate a random, interesting topic directly
-        topic_prompt = "Generate a random, interesting, and specific topic for a short report or essay. The topic can be about anything. Return only the topic itself."
-        topic_response = model.generate_content(topic_prompt)
-        full_topic = topic_response.text.strip().replace('**', '')
-        if not full_topic:
-            raise ValueError("API returned an empty topic")
-        print(f"[{file_index}] Topic: {full_topic[:60]}...")
+        print(f"[{file_index}] Generating content with a single API call...")
+        
+        # New, combined prompt asking for a JSON object
+        prompt = """
+        Generate content for a short report or essay on a random, interesting, and specific topic. The topic can be about anything.
 
-        # 2. Summarize the topic for the filename
-        filename_prompt = f"Summarize the following topic into ONE SINGLE, short, concise phrase (5-10 words) suitable for a filename. Only return that phrase, no explanation, no formatting, no newlines. Topic: '{full_topic}'"
-        filename_response = model.generate_content(filename_prompt)
-        short_topic = filename_response.text.strip().replace('**', '').replace('\n', ' ')
-        if not short_topic:
-            short_topic = full_topic # Fallback to the full topic
+        Return a single, valid JSON object with NO other text before or after it.
+
+        The JSON object must have the following three keys:
+        1.  "full_topic": A string containing the full, descriptive title of the document.
+        2.  "short_topic": A string containing a very short, concise phrase (5-10 words) suitable for a filename. This should be a summary of the full_topic.
+        3.  "content": A string containing a detailed analysis or report on the topic, approximately 800-1200 words, in English. The content MUST be formatted in Markdown and follow this structure: Title (as the first line), Introduction, Main Body (divided into 3-4 key points with subheadings), and Conclusion.
+        """
+
+        # Configure the model to return JSON
+        generation_config = genai.types.GenerationConfig(
+            response_mime_type="application/json"
+        )
+        response = model.generate_content(prompt, generation_config=generation_config)
+        
+        # Clean up and parse the JSON response
+        response_text = response.text.strip()
+        
+        # Find the JSON object in the response text
+        match = re.search(r'\{.*\}', response_text, re.DOTALL)
+        if not match:
+            raise ValueError("API did not return a valid JSON object.")
+        
+        json_text = match.group(0)
+        data = json.loads(json_text)
+
+        full_topic = data.get("full_topic", "").strip()
+        short_topic = data.get("short_topic", "").strip()
+        content = data.get("content", "").strip()
+
+        if not all([full_topic, short_topic, content]):
+            raise ValueError("API response is missing one or more required JSON keys (full_topic, short_topic, content).")
+
+        print(f"[{file_index}] Topic: {full_topic[:60]}...")
         print(f"[{file_index}] Filename: {short_topic}")
 
-        # 3. Write the detailed content
-        print(f"[{file_index}] Writing content...")
-        content_prompt = f"""
-        Write a detailed analysis or report, approximately 800-1200 words, in English, on the following topic: "{full_topic}".
-        The document must have depth, equivalent to a high-quality academic paper (about 1-2 A4 pages).
-        Required structure: Title, Introduction, Main Body (divided into 3-4 key points with subheadings), and Conclusion.
-        Required format: Markdown.
-        IMPORTANT: Do not include any introductory or concluding remarks, conversational text, or any content other than the document itself. The output must start directly with the title of the document.
-        """
-        content_response = model.generate_content(content_prompt)
-        content = content_response.text
-
-        # 4. Prepare filename and paths
         cleaned_short_topic = sanitize_topic_for_filename(short_topic)
         base_filename = f"[Reference][AI][{cleaned_short_topic[:100]}]"
         md_filepath = os.path.join(output_dir, f"{base_filename}.md")
         docx_filepath = os.path.join(output_dir, f"{base_filename}.docx")
         
-        # 5. Save and convert the file
-        print(f"[{file_index}] Converting to .docx...")
+        print(f"[{file_index}] Writing content and converting to .docx...")
         with open(md_filepath, 'w', encoding='utf-8') as f:
             f.write(content)
         
@@ -72,19 +83,22 @@ def create_document(model, output_dir, file_index):
             check=True, capture_output=True
         )
         
-        # 6. Log success
         print(f"[{file_index}] CREATED SUCCESSFULLY: {os.path.basename(docx_filepath)}")
 
-        # 7. Clean up
         os.remove(md_filepath)
         return True
 
-    except Exception as e:
-        # Log error
+    except (Exception, json.JSONDecodeError) as e:
         error_message = str(e)
         if isinstance(e, subprocess.CalledProcessError):
             error_message = e.stderr.decode('utf-8', errors='ignore')
-        print(f"[{file_index}] ERROR: {error_message[:300]}")
+        
+        # Include response text in error for better debugging
+        if 'response' in locals() and hasattr(response, 'text'):
+            error_message += f"\nAPI Response Text: {response.text[:500]}"
+
+        print(f"[{file_index}] ERROR: {error_message[:400]}")
+        
         if md_filepath and os.path.exists(md_filepath):
             os.remove(md_filepath)
         return False
@@ -93,8 +107,9 @@ def main():
     """Main function to coordinate document creation."""
     print("Starting document generation process...")
 
-    if not os.path.exists(PANDOC_PATH):
-        print(f"ERROR: pandoc.exe not found at: {PANDOC_PATH}")
+    if not shutil.which(PANDOC_PATH):
+        print(f"ERROR: '{PANDOC_PATH}' is not found in your system's PATH.")
+        print("Please install Pandoc and ensure it is added to your system's environment variables.")
         sys.exit(1)
 
     api_key = os.getenv("GEMINI_API_KEY")
@@ -104,7 +119,7 @@ def main():
 
     try:
         genai.configure(api_key=api_key)
-        model = genai.GenerativeModel('gemini-2.5-flash')
+        model = genai.GenerativeModel('gemini-2.5-flash-lite')
     except Exception as e:
         print(f"ERROR: API configuration failed. Details: {e}")
         sys.exit(1)
@@ -121,7 +136,7 @@ def main():
     print(f"\nWill generate {num_files} file(s) on random topics.\n")
 
     success_count = 0
-    max_workers = min(num_files, 10)
+    max_workers = min(num_files, 3)
     with ThreadPoolExecutor(max_workers=max_workers) as executor:
         # The 'subject' argument is removed from the call
         futures = {executor.submit(create_document, model, output_dir, i + 1): i for i in range(num_files)}
