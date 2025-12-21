@@ -1,18 +1,18 @@
 # AI Document Generator
 
-A command-line tool that uses the Google Gemini API to automatically generate detailed reports on random topics and saves them as `.docx` files.
+A command-line tool that uses the Groq API to automatically generate detailed reports on random topics and saves them as `.docx` files.
 
 ## Features
 
 -   Generates random, interesting topics.
-- Uses the `gemini-2.5-flash` model to write 800-1200 word articles in Markdown.
+- Uses the `llama-3.3-70b-versatile` model via Groq to write 800-1200 word articles in Markdown.
 -   Automatically converts Markdown files to `.docx` using Pandoc.
 -   Supports concurrent document creation.
 
 ## Requirements
 
 -   Python 3.x
--   A Google Gemini API Key.
+-   A Groq API Key.
 -   **Pandoc:** You must install Pandoc and ensure its executable is in your system's PATH.
 
 ## Setup
@@ -39,9 +39,9 @@ A command-line tool that uses the Google Gemini API to automatically generate de
     -   Create a `.env` file from the example: `copy .env.example .env` (on Windows) or `cp .env.example .env` (on Mac/Linux).
     -   Add your API key to the new `.env` file:
         ```
-        GEMINI_API_KEY="YOUR_API_KEY_HERE"
+        GROQ_API_KEY="YOUR_API_KEY_HERE"
         ```
-    -   Get your key here: https://aistudio.google.com/api-keys
+    -   Get your key here: https://console.groq.com/keys
 ## Usage
 
 Run the script from the command line, providing the number of documents you want to create.

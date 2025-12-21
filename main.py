@@ -3,7 +3,7 @@ import sys
 
 os.environ['GRPC_VERBOSITY'] = 'ERROR'
 
-import google.generativeai as genai
+from groq import Groq
 from dotenv import load_dotenv
 import re
 import subprocess
@@ -20,7 +20,7 @@ def sanitize_topic_for_filename(topic):
     cleaned_topic = re.sub(invalid_chars, '', topic)
     return cleaned_topic.strip()
 
-def create_document(model, output_dir, file_index):
+def create_document(client, output_dir, file_index):
     """
     Creates a single document by generating a topic, filename, and content
     in a single API call.
@@ -41,14 +41,24 @@ def create_document(model, output_dir, file_index):
         3.  "content": A string containing a detailed analysis or report on the topic, approximately 800-1200 words, in English. The content MUST be formatted in Markdown and follow this structure: Title (as the first line), Introduction, Main Body (divided into 3-4 key points with subheadings), and Conclusion.
         """
 
-        # Configure the model to return JSON
-        generation_config = genai.types.GenerationConfig(
-            response_mime_type="application/json"
+        completion = client.chat.completions.create(
+            model="llama-3.3-70b-versatile",
+            messages=[
+                {
+                    "role": "user",
+                    "content": prompt
+                }
+            ],
+            temperature=1,
+            max_completion_tokens=4096, # Increased to ensure full JSON fit
+            top_p=1,
+            stream=False,
+            stop=None,
+            response_format={"type": "json_object"}
         )
-        response = model.generate_content(prompt, generation_config=generation_config)
         
         # Clean up and parse the JSON response
-        response_text = response.text.strip()
+        response_text = completion.choices[0].message.content.strip()
         
         # Find the JSON object in the response text
         match = re.search(r'\{.*\}', response_text, re.DOTALL)
@@ -93,8 +103,8 @@ def create_document(model, output_dir, file_index):
             error_message = e.stderr.decode('utf-8', errors='ignore')
         
         # Include response text in error for better debugging
-        if 'response' in locals() and hasattr(response, 'text'):
-            error_message += f"\nAPI Response Text: {response.text[:500]}"
+        if 'response_text' in locals():
+            error_message += f"\nAPI Response Text: {response_text[:500]}"
 
         print(f"[{file_index}] ERROR: {error_message[:400]}")
         
@@ -110,14 +120,13 @@ def main():
         print(f"ERROR: pandoc.exe not found at: {PANDOC_PATH}")
         sys.exit(1)
 
-    api_key = os.getenv("GEMINI_API_KEY")
-    if not api_key or api_key == "YOUR_API_KEY_HERE":
-        print("ERROR: Please add your Gemini API Key to the .env file")
+    api_key = os.getenv("GROQ_API_KEY")
+    if not api_key:
+        print("ERROR: Please add your GROQ_API_KEY to the .env file")
         sys.exit(1)
 
     try:
-        genai.configure(api_key=api_key)
-        model = genai.GenerativeModel('gemini-2.5-flash-lite')
+        client = Groq(api_key=api_key)
     except Exception as e:
         print(f"ERROR: API configuration failed. Details: {e}")
         sys.exit(1)
@@ -137,7 +146,7 @@ def main():
     max_workers = min(num_files, 3)
     with ThreadPoolExecutor(max_workers=max_workers) as executor:
         # The 'subject' argument is removed from the call
-        futures = {executor.submit(create_document, model, output_dir, i + 1): i for i in range(num_files)}
+        futures = {executor.submit(create_document, client, output_dir, i + 1): i for i in range(num_files)}
         
         for future in as_completed(futures):
             if future.result():
