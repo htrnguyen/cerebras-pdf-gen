@@ -1,3 +1,12 @@
+---
+title: Cerebras PDF Gen
+emoji: 🚀
+colorFrom: blue
+colorTo: indigo
+sdk: docker
+pinned: false
+---
+
 # Cerebras PDF Generator 🚀
 
 **Cerebras PDF Generator** là một ứng dụng Web tự động sinh ra hàng loạt các tài liệu học thuật và kiến thức chuyên sâu dưới định dạng PDF chuẩn xác, sử dụng sức mạnh xử lý siêu tốc của **Cerebras Llama-3 70B**. Dự án được xây dựng dựa trên kiến trúc OOP Clean Architecture tối ưu hóa để triển khai linh hoạt (Docker, Hugging Face Spaces, Render, GitHub Pages kết nối Backend).
