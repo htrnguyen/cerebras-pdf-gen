@@ -1,0 +1,162 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Cerebras Document Generator</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <link rel="stylesheet" href="/static/css/styles.css" />
+</head>
+
+<body class="min-h-screen bg-slate-50 flex flex-col relative overflow-x-hidden selection:bg-blue-200 selection:text-blue-900">
+    <!-- Gradient Background Elements -->
+    <div class="fixed inset-0 pointer-events-none overflow-hidden -z-20">
+        <div class="absolute -top-40 -left-40 w-96 h-96 bg-blue-400 rounded-full mix-blend-multiply filter blur-[128px] opacity-40 animate-pulse"></div>
+        <div class="absolute top-40 -right-40 w-96 h-96 bg-purple-400 rounded-full mix-blend-multiply filter blur-[128px] opacity-40 animate-pulse" style="animation-delay: 2s;"></div>
+        <div class="absolute -bottom-40 left-20 w-96 h-96 bg-cyan-400 rounded-full mix-blend-multiply filter blur-[128px] opacity-40 animate-pulse" style="animation-delay: 4s;"></div>
+    </div>
+
+    <header class="w-full flex justify-center pt-8 sm:pt-12 pb-4 px-4 relative z-10 transition-all">
+        <button onclick="window.app.ui.showModal('howItWorks')" class="bg-white/70 backdrop-blur-xl border border-white/40 shadow-xl shadow-slate-200/50 px-5 py-2 rounded-full inline-flex items-center gap-3 hover:bg-white/80 transition-colors group cursor-pointer">
+            <div class="w-6 h-6 rounded-full bg-gradient-to-tr from-blue-600 to-indigo-500 flex items-center justify-center shadow-sm group-hover:scale-105 transition-transform">
+                <span class="material-symbols-outlined text-white text-[14px]">auto_awesome</span>
+            </div>
+            <div class="flex items-center gap-1.5 pr-2">
+                <span class="text-xs font-semibold tracking-wide text-slate-700 group-hover:text-blue-600 transition-colors">Hướng dẫn sử dụng</span>
+            </div>
+        </button>
+    </header>
+
+    <main class="flex-1 flex flex-col items-center justify-center p-4 sm:p-8 relative pb-20 sm:pb-32">
+        <div class="w-full max-w-[600px] flex flex-col gap-8">
+            <div class="text-center mb-2">
+                <h1 class="text-4xl font-semibold tracking-tight text-slate-900 mb-3 drop-shadow-sm">
+                    Cerebras Document Generator
+                </h1>
+                <p class="text-slate-500 text-lg font-normal max-w-lg mx-auto leading-relaxed">
+                    Hệ thống sinh tài liệu PDF tự động chuyên biệt bằng sức mạnh của API Cerebras.
+                </p>
+            </div>
+            
+            <div class="bg-white/70 backdrop-blur-xl border border-white/40 shadow-xl shadow-slate-200/50 rounded-2xl p-6 sm:p-8 flex flex-col gap-6 relative overflow-hidden transition-all duration-300">
+
+                    <div class="flex flex-col gap-2 relative">
+                        <div class="flex justify-between items-center px-1">
+                            <label class="text-slate-500 text-xs font-semibold uppercase tracking-wider">Cerebras Cloud API Key</label>
+                        </div>
+                        <div class="relative group">
+                            <div class="absolute left-3 top-1/2 -translate-y-1/2 flex items-center justify-center text-slate-400">
+                                <span class="material-symbols-outlined text-[20px]">key</span>
+                            </div>
+                            <input class="w-full h-10 rounded-lg bg-white border border-slate-200 shadow-inner shadow-slate-100 hover:border-blue-400 focus:border-[#007AFF] focus:ring-4 focus:ring-blue-500/20 transition-all outline-none text-slate-800 pl-10 pr-10 placeholder:text-slate-400 font-mono text-[13px]"
+                                placeholder="csk-..." type="password" value="" />
+                            <button class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors">
+                                <span class="material-symbols-outlined text-[18px]">visibility_off</span>
+                            </button>
+                        </div>
+                        <div class="flex justify-end px-1 mt-0.5">
+                            <a href="https://cloud.cerebras.ai/" target="_blank" class="text-[11px] font-medium text-blue-500 hover:text-blue-700 transition-colors flex items-center gap-1 inline-flex">
+                                Cách lấy API Key?
+                                <span class="material-symbols-outlined text-[12px]">open_in_new</span>
+                            </a>
+                        </div>
+                    </div>
+                    
+                    <div class="flex flex-col gap-3">
+                        <div class="flex justify-between items-center px-1">
+                            <label class="text-slate-500 text-xs font-semibold uppercase tracking-wider">Số lượng File PDF cần tạo</label>
+                            <span class="text-blue-600 text-[10px] font-bold bg-blue-50 px-2 py-0.5 rounded border border-blue-100">Khuyên dùng: 10+</span>
+                        </div>
+                        <div class="grid grid-cols-4 gap-2 mb-1">
+                            <button class="h-9 rounded-lg bg-white border border-slate-200 shadow-sm hover:shadow-md hover:border-slate-300 active:bg-slate-50 text-slate-600 font-medium text-sm transition-all hover:bg-slate-50">5</button>
+                            <button class="h-9 rounded-lg bg-slate-200 text-slate-900 font-semibold text-sm shadow-inner shadow-slate-300 border border-slate-300">10</button>
+                            <button class="h-9 rounded-lg bg-white border border-slate-200 shadow-sm hover:shadow-md hover:border-slate-300 active:bg-slate-50 text-slate-600 font-medium text-sm transition-all hover:bg-slate-50">15</button>
+                            <button class="h-9 rounded-lg bg-white border border-slate-200 shadow-sm hover:shadow-md hover:border-slate-300 active:bg-slate-50 text-slate-600 font-medium text-sm transition-all hover:bg-slate-50">20</button>
+                        </div>
+                        <div class="flex items-center justify-between bg-white rounded-lg p-1.5 shadow-sm border border-slate-200">
+                            <button id="btn-dec" class="w-8 h-8 flex items-center justify-center rounded-md hover:bg-slate-100 text-slate-500 transition-colors">
+                                <span class="material-symbols-outlined text-[18px]">remove</span>
+                            </button>
+                            <div class="flex flex-col items-center">
+                                <span id="file-count-display" class="text-lg font-semibold text-slate-800 leading-none">10</span>
+                                <span class="text-[10px] text-slate-400 leading-none mt-0.5">files</span>
+                            </div>
+                            <button id="btn-inc" class="w-8 h-8 flex items-center justify-center rounded-md hover:bg-slate-100 text-slate-500 transition-colors">
+                                <span class="material-symbols-outlined text-[18px]">add</span>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="h-px w-full bg-gradient-to-r from-transparent via-slate-200 to-transparent my-1"></div>
+                    
+                    <div class="flex flex-col gap-4">
+                        <button id="btn-generate" class="w-full h-12 bg-gradient-to-b from-[#007AFF] to-[#0056b3] border border-[#0051a8] text-white shadow-sm hover:shadow-md active:from-[#0056b3] active:to-[#004494] text-[15px] font-semibold rounded-xl shadow-lg shadow-blue-500/20 transition-all flex items-center justify-center gap-2 group transform active:scale-[0.99]">
+                            <svg class="w-5 h-5 text-blue-50" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24">
+                                <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"></path>
+                            </svg>
+                            Tạo tài liệu PDF
+                        </button>
+                        <div id="error-msg" class="text-red-500 text-xs font-medium text-center hidden"></div>
+                        <div class="flex items-center gap-1.5 justify-center opacity-70">
+                            <span class="material-symbols-outlined text-slate-400 text-[14px]">bolt</span>
+                            <span class="text-[11px] font-medium text-slate-500">Powered by Cerebras Llama-3 70B</span>
+                        </div>
+                    </div>
+                    
+                    <div id="progress-container" class="mt-2 p-4 rounded-xl bg-white/60 border border-white/60 shadow-sm backdrop-blur-sm hidden">
+                        <div class="flex justify-between items-center mb-2">
+                            <div class="flex items-center gap-2">
+                                <div class="relative flex h-2.5 w-2.5">
+                                    <span id="ping-indicator" class="relative inline-flex rounded-full h-2.5 w-2.5 bg-blue-500"></span>
+                                </div>
+                                <span id="status-text" class="text-[13px] font-medium text-slate-700">Đang khởi tạo...</span>
+                            </div>
+                            <span id="progress-text" class="text-slate-500 text-xs font-mono">0%</span>
+                        </div>
+                        <div class="w-full h-1.5 bg-slate-200/80 rounded-full overflow-hidden mb-2">
+                            <div id="progress-bar" class="h-full bg-[#007AFF] w-[0%] rounded-full relative overflow-hidden shadow-[0_0_10px_rgba(0,122,255,0.4)] transition-all duration-500">
+                                <div class="absolute inset-0 bg-white/30 w-full h-full animate-[shimmer_1.5s_infinite] skew-x-12 origin-top-left translate-x-[-100%]"></div>
+                            </div>
+                        </div>
+                        <div class="flex justify-between text-[10px] text-slate-400 font-medium px-0.5">
+                            <span>Bắt đầu</span>
+                            <span class="text-blue-600">Đang xử lý</span>
+                            <span>Hoàn thành</span>
+                        </div>
+                        <div id="log-text" class="mt-3 text-[10px] text-slate-500 font-mono h-4 overflow-hidden truncate"></div>
+                        <div id="download-link-container" class="mt-3 text-center hidden">
+                            <a id="download-link" href="#" target="_blank" class="inline-flex items-center gap-1.5 px-4 py-2 bg-blue-50 text-blue-600 rounded-lg text-xs font-semibold hover:bg-blue-100 transition-colors border border-blue-200">
+                                <span class="material-symbols-outlined text-[16px]">download</span>
+                                Tải thư mục chứa PDF (ZIP)
+                            </a>
+                        </div>
+                    </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="flex justify-center gap-6 text-xs text-slate-400 font-medium relative z-10 mt-6 sm:mt-8">
+                <button onclick="window.app.ui.showModal('terms')" class="hover:text-slate-600 transition-colors">Terms</button>
+                <span class="text-slate-300">•</span>
+                <button onclick="window.app.ui.showModal('privacy')" class="hover:text-slate-600 transition-colors">Privacy</button>
+                <span class="text-slate-300">•</span>
+                <button onclick="window.app.ui.showModal('support')" class="hover:text-slate-600 transition-colors">Support</button>
+            </div>
+        </div>
+    </main>
+
+    <!-- Legal Modal -->
+    <div id="legal-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 hidden opacity-0 transition-opacity duration-300">
+        <div class="absolute inset-0 bg-slate-900/40 backdrop-blur-sm" onclick="window.app.ui.hideModal()"></div>
+        <div class="bg-white/90 backdrop-blur-xl border border-white/40 shadow-2xl rounded-2xl w-full max-w-md p-6 relative z-10 transform scale-95 transition-transform duration-300" id="legal-modal-content">
+            <h3 id="modal-title" class="text-lg font-semibold text-slate-800 mb-2"></h3>
+            <div id="modal-body" class="text-[13px] text-slate-600 leading-relaxed mb-6 space-y-3"></div>
+            <button onclick="window.app.ui.hideModal()" class="w-full h-10 bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium rounded-xl transition-colors">Đóng</button>
+        </div>
+    </div>
+    <script src="/static/js/app.js"></script>
+</body>
+
+</html>

@@ -1,2 +1,7 @@
-groq
+fastapi
+uvicorn
+reportlab
+cerebras_cloud_sdk
+requests
 python-dotenv
+python-multipart
