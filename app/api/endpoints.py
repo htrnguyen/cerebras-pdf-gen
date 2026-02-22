@@ -35,6 +35,7 @@ def start_generation(data: dict, background_tasks: BackgroundTasks):
     return JSONResponse({"status": "success", "message": "Generation started."})
 
 
+@router.head("/api/status")
 @router.get("/api/status")
 def get_status():
     return JSONResponse(global_state.get_public_status())

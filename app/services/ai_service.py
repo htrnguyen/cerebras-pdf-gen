@@ -18,7 +18,12 @@ class AIService:
         """Perform a quick, low-cost check to verify if the API key is active"""
         try:
             temp_client = Cerebras(api_key=api_key)
-            temp_client.models.list()
+            # Perform a minimal 1-token request to strictly force authentication
+            temp_client.chat.completions.create(
+                model="llama3.1-8b",
+                messages=[{"role": "user", "content": "hi"}],
+                max_completion_tokens=1
+            )
             return True
         except Exception:
             return False
