@@ -94,14 +94,11 @@ class PDFService:
                 elif line.startswith("### "):
                     story.append(Paragraph(line[4:], heading_style))
                 else:
-                    # Hỗ trợ in đậm bằng font bold tốn tại
                     line = re.sub(r'\*\*(.*?)\*\*', rf'<font name="{bold_font}">\1</font>', line)
-                    # Loại bỏ các kí tự markdown in nghiêng/in đậm thừa để text được trong sáng
                     line = re.sub(r'\*(.*?)\*', r'\1', line)
                     line = re.sub(r'__(.*?)__', rf'<font name="{bold_font}">\1</font>', line)
                     line = re.sub(r'_(.*?)_', r'\1', line)
                     
-                    # Dọn dẹp nốt dấu # nếu AI lỡ rải rác
                     line = line.replace("### ", "").replace("## ", "")
                     
                     story.append(Paragraph(line, custom_style))
