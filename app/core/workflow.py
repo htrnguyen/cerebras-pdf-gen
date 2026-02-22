@@ -52,7 +52,8 @@ class DocumentGenerationWorkflow:
                 global_state.add_message(f"Zipping {status['completed']} files in memory...")
                 
                 try:
-                    download_url = StorageService.upload_pdfs_as_zip(status['generated_pdf_data'])
+                    pdf_data = global_state.get_and_clear_pdf_data()
+                    download_url = StorageService.upload_pdfs_as_zip(pdf_data)
                     global_state.set_download_url(download_url)
                     global_state.add_message(f"Upload successful! Direct URL: {download_url}")
                 except Exception as upload_err:

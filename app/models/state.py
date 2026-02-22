@@ -60,6 +60,12 @@ class GenerationState:
                 "download_url": self.download_url,
             }
 
+    def get_and_clear_pdf_data(self) -> List[Tuple[str, bytes]]:
+        with self._lock:
+            data = list(self.generated_pdf_data)
+            self.generated_pdf_data.clear()
+            return data
+
     @property
     def is_currently_running(self) -> bool:
         with self._lock:
