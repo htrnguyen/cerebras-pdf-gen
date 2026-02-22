@@ -27,6 +27,10 @@ def start_generation(data: dict, background_tasks: BackgroundTasks):
     if not api_key:
         return JSONResponse({"status": "error", "message": "API Key is required."})
 
+    from app.services.ai_service import AIService
+    if not AIService.verify_api_key(api_key):
+        return JSONResponse({"status": "error", "message": "Mã API Key không hợp lệ hoặc đã hết hạn từ Cerebras Cloud."})
+
     background_tasks.add_task(DocumentGenerationWorkflow.run, api_key, num_files)
     return JSONResponse({"status": "success", "message": "Generation started."})
 

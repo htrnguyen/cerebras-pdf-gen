@@ -61,7 +61,11 @@ class DocumentGenerationWorkflow:
 
         except Exception as e:
             traceback.print_exc()
-            global_state.add_message(f"Fatal error initializing workflow: {str(e)}")
+            err_str = str(e)
+            if "401" in err_str or "Wrong API Key" in err_str:
+                global_state.add_message("Lỗi: API Key không hợp lệ hoặc đã hết hạn.")
+            else:
+                global_state.add_message(f"Lỗi khởi tạo hệ thống: {err_str[:80]}")
         finally:
             global_state.stop_generation()
             global_state.add_message("Process finished.")

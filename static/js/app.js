@@ -205,6 +205,7 @@ class AppManager {
             this.pollInterval = setInterval(() => this.checkStatus(), 1000);
         } catch (err) {
             this.ui.showError(err.message);
+            this.ui.progressContainer.classList.add("hidden");
             this.ui.resetGenerateButton();
         }
     }
@@ -223,9 +224,17 @@ class AppManager {
 
             this.ui.updateProgress(percentage, completedFiles, targetFiles, latestMessage);
 
-            if (!data.is_running && completedFiles > 0) {
+            if (!data.is_running) {
                 clearInterval(this.pollInterval);
-                this.ui.setCompletedState(data);
+                if (completedFiles > 0) {
+                    this.ui.setCompletedState(data);
+                } else {
+                    // Fatal error happened before any files could be processed
+                    const errorMsg = latestMessage || "Failed to initialize generation.";
+                    this.ui.progressContainer.classList.add("hidden");
+                    this.ui.showError(errorMsg);
+                    this.ui.resetGenerateButton();
+                }
             }
         } catch (err) {
             console.error("Polling error:", err);

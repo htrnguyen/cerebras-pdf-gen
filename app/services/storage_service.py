@@ -16,7 +16,7 @@ class StorageService:
             raise ValueError("No files to zip")
 
         timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
-        zip_filename = f"pdfs_{timestamp}.zip"
+        zip_filename = f"generated_pdfs_{timestamp}.zip"
         zip_buffer = io.BytesIO()
 
         with zipfile.ZipFile(zip_buffer, "w", zipfile.ZIP_DEFLATED) as zipf:

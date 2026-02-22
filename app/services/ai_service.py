@@ -13,6 +13,16 @@ class AIService:
         """Initialize Cerebras client with API Key"""
         self.client = Cerebras(api_key=api_key)
 
+    @staticmethod
+    def verify_api_key(api_key: str) -> bool:
+        """Perform a quick, low-cost check to verify if the API key is active"""
+        try:
+            temp_client = Cerebras(api_key=api_key)
+            temp_client.models.list()
+            return True
+        except Exception:
+            return False
+
     def generate_topics(self, num_topics: int) -> List[str]:
         prompt = f'Tạo một mảng JSON chứa {num_topics} chủ đề học thuật hoặc kiến thức phổ thông ngẫu nhiên (hoàn toàn bằng Tiếng Việt). Mỗi chủ đề mang tính giáo dục chuyên sâu, ngẫu nhiên ở đa dạng các lĩnh vực như Lịch sử, Địa lý, Toán, Lý, Hóa, Sinh... Trả về đúng 1 JSON object có dạng: {{\n"topics": [ "chủ đề 1", "chủ đề 2", ... ]\n}}'
 
