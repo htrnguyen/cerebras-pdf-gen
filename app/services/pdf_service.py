@@ -91,8 +91,19 @@ class PDFService:
                     story.append(Paragraph(line[2:], title_style))
                 elif line.startswith("## "):
                     story.append(Paragraph(line[3:], heading_style))
+                elif line.startswith("### "):
+                    story.append(Paragraph(line[4:], heading_style))
                 else:
-                    line = line.replace("**", "").replace("*", "")
+                    # Hỗ trợ in đậm bằng font bold tốn tại
+                    line = re.sub(r'\*\*(.*?)\*\*', rf'<font name="{bold_font}">\1</font>', line)
+                    # Loại bỏ các kí tự markdown in nghiêng/in đậm thừa để text được trong sáng
+                    line = re.sub(r'\*(.*?)\*', r'\1', line)
+                    line = re.sub(r'__(.*?)__', rf'<font name="{bold_font}">\1</font>', line)
+                    line = re.sub(r'_(.*?)_', r'\1', line)
+                    
+                    # Dọn dẹp nốt dấu # nếu AI lỡ rải rác
+                    line = line.replace("### ", "").replace("## ", "")
+                    
                     story.append(Paragraph(line, custom_style))
 
             def add_footer(canvas, doc):
@@ -102,7 +113,7 @@ class PDFService:
                 canvas.drawCentredString(
                     A4[0] / 2.0,
                     20,
-                    "Nội dung này do AI sinh ra dựa trên kiến thức phổ thông. Vui lòng cân nhắc kiểm chứng trước khi sử dụng chính thức.",
+                    "Nội dung được tạo bởi Cerebras Llama-3 70B. Vui lòng kiểm tra lại nội dung trước khi sử dụng.",
                 )
                 canvas.restoreState()
 
